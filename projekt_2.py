@@ -22,7 +22,7 @@ def check_player():             # zadání jména uživatele a požadované obt�
     name = input("Welcome to the BULLS and COWS game.\nInput your name: ")
     return(name)
 
-def generate_number(level: int):  # generované číslice musí být unikátní a nesmí začínat nulou
+def generate_number(level: int):  # generuj náhodné číslo, generované číslice musí být unikátní a nesmí začínat nulou
     from random import randint
     digit_list = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
     generated = str(randint(1, 9))
@@ -65,14 +65,14 @@ def evaluate_player_guess(guess, secret):     # vyhodnocení uživatelského tip
                 cows += 1
     return (bulls, cows)
 
-def check_play_again():
+def check_play_again():                     # požadavek uživatele hrát znovu
     play = ""
     while play not in ["Y", "Yes", "y", "N", "No", "n"]:
         play = input("Play again? (Yes/No) ")
     return False if play.casefold().startswith("n") else True
 
 
-def read_results():
+def read_results():                         # načtení výsledků ze souboru do listu s výsledky
     if not "results.res" in os.listdir():
         with open("results.res", mode="w", encoding="utf-8"):
             return False
@@ -84,13 +84,13 @@ def read_results():
     # načtení souboru s výsledky do proměnné results_list
     # udělá soubor results.res, pokud neexistuje
 
-def save_player_result(result):           # ulož výsledky aktuální hry
+def save_player_result(result):           # ulož výsledky aktuální hry do souboru
     read_results()
     with open("results.res", mode="a", encoding="utf-8") as results_file:
         results_file.writelines(";".join(str(item) for item in list(result.values())))
         results_file.write("\n")
     
-def view_hall_of_fame(level):
+def view_hall_of_fame(level):               # načtení výsledků, setřídění a zobrazení top 10
     splitted_list_level = []
     results_list = read_results()
     show_level = ["ROOKIE", "EXPERIENCED", "PRO"]
@@ -113,6 +113,7 @@ def view_hall_of_fame(level):
             break
     else:
         print(f"END OF TOP 10 LEVEL {show_level[int(level)]}".center(60, "_"))
+
 # MAIN PART
 
 # před zahájením hry
@@ -121,8 +122,7 @@ player = ["name",0]                     # player[0] - jméno, player[1] - level
 player[0] = check_player()
 play_again = True
 
-
-while play_again:
+while play_again:                       # hlavní herní loop
     player[1] = choose_level()
     secret_sequence = generate_number(int(player[1]))
     
@@ -135,7 +135,7 @@ while play_again:
     start_time = time.perf_counter()
     attempt_counter = 0
 
-    while True:
+    while True:                        # zadávání a hodnocení pokusů
         attempt_counter += 1
         if (attempt_counter > int(player[1])*20) and int(player[1]):
             print("You reached maximum attempts. You lost!")
@@ -158,10 +158,10 @@ while play_again:
             print("Total attempts: {} Total game duration: {} seconds.".format(attempt_counter, game_duration))
             player_result = {"name": player[0], "level": player[1], "attempts":attempt_counter, "time":game_duration}
             break
-    save_player_result(player_result) if player_result["time"] != 999999 else ...
+    save_player_result(player_result) if player_result["time"] != 999999 else ...   # uložení platného pokusu
     input("... PRESS ENTER TO CONTINUE ...")
     clear_screen()
-    view_hall_of_fame(player[1])
+    view_hall_of_fame(player[1])                                                    # zobrazení top 10 
     play_again = check_play_again()  
 
 # konec hry
